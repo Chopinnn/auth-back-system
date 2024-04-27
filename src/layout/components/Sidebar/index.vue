@@ -3,10 +3,10 @@
 		<div class="logo-container">
 			<el-avatar
 				:size="logoHeight"
-				src="https://osstest.eetop.com/bewt365/578d0d88e7ad2f9ae99f10eee8e08d9c.jpg"
+				src="https://typora-1314223527.cos.ap-chongqing.myqcloud.com/cartoon.webp"
 			/>
 			<h1 v-if="$store.getters.sidebarOpened" class="logo-title">
-				Vue3后台系统
+				CAS后台系统
 			</h1>
 		</div>
 		<el-scrollbar>

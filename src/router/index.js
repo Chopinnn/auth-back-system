@@ -3,21 +3,21 @@ import {
 	createWebHashHistory
 } from "vue-router";
 import store from "@/store";
-
 import layout from "@/layout";
 import permissions from "./modules/permissions";
-import third from "./modules/third";
-import cssAnimation from "./modules/cssAnimation";
-import vueUse from "./modules/vueUse";
+import system from "./modules/system";
+import service from "./modules/service";
+
+// 白名单（不需要登录的界面）
+const whiteList = ["/login"];
 
 /**
  * 私有路由表
  */
 export const privateRoutes = [
 	permissions,
-	third,
-	cssAnimation,
-	vueUse
+	service,
+	system
 ];
 
 /**
@@ -30,7 +30,6 @@ export const publicRoutes = [
 	},
 	{
 		path: "/",
-		// 注意：带有路径“/”的记录中的组件“默认”是一个不返回 Promise 的函数
 		component: layout,
 		redirect: "/home",
 		children: [
@@ -39,46 +38,42 @@ export const publicRoutes = [
 				name: "home",
 				component: () => import("@/views/home/index"),
 				meta: { title: "首页", icon: "home", affix: true }, // affix=true,tagViews右侧没有关闭按钮
-				hidden: true// true不显示在侧边栏
+				hidden: false
 			},
 			{
 				path: "/404",
 				name: "404",
 				component: () => import("@/views/error-page/404")
-			},
-			{
-				path: "/401",
-				name: "401",
-				component: () => import("@/views/error-page/401")
 			}
 		]
+	},
+	{
+		path: "/:pathMatch(.*)*",
+		name: "404",
+		component: () => import("@/views/error-page/404")
 	}
 ];
 
-/**
- * 初始化路由表
- */
-export function resetRouter() {
-	if (store.getters.hasRoles) {
-		const menus = store.getters.roles;
-		// removeRoute是根据路由的name去删除路由的，所以我们要对路由的名字进行截取
-		// const menus = ['getRoleList','admintorList','adminAuth']
-		// console.log("menus==",menus)
-		// console.log("router==",router.getRoutes())
-		menus.forEach(menu => {
-			const url = menu.url;
-			const i = url.lastIndexOf("/");
-			const name = url.substring(i + 1, url.length);
-			router.removeRoute(name);
-		});
-	}
-}
-
 const router = createRouter({
 	history: createWebHashHistory(),
-	// routes: [...publicRoutes, ...privateRoutes]
-	routes: publicRoutes
+	routes: [...publicRoutes,...privateRoutes]
+});
 
+/**
+ * 路由前置守卫
+ */
+router.beforeEach(async(to, from, next) => {
+	// 存在 token ，进入主页
+	if (store.getters.token) { // 当前存在token，如果此时去登录界面，自动跳转到主页
+		next();
+	} else {
+		// 没有token的情况下，可以进入白名单
+		if (whiteList.indexOf(to.path) > -1) {
+			next();
+		} else { // 如果是需要登录的界面，去登录界面
+			next("/login");
+		}
+	}
 });
 
 export default router;

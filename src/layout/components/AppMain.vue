@@ -30,7 +30,6 @@ import { useStore } from "vuex";
 const store = useStore();
 const route = useRoute();
 const cachedViews = computed(() => {
-	console.log(store.getters.tagsViewList.map((x) => x.name));
 	return store.getters.tagsViewList.map((x) => x.name);
 });
 
@@ -55,8 +54,6 @@ const getTitle = route => {
 watch(
 	route,
 	(to, from) => {
-		// const cachedViews = store.getters.tagsViewList
-		// console.log("store.getters.tagsViewList",cachedViews)
 		if (!isTags(to.path)) return;
 		const { fullPath, meta, name, params, path, query } = to;
 		store.commit("app/addTagsViewList", {

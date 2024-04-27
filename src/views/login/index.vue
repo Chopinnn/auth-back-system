@@ -225,6 +225,7 @@ const loginForm = ref({
 	captcha_code: "",
 	code_key: ""
 });
+
 // 验证规则
 const loginRules = ref({
 	username: [
@@ -275,7 +276,6 @@ const router = useRouter();
 const handleLogin = () => {
 	loginFromRef.value.validate(valid => {
 		if (!valid) return;
-		console.log(loginForm.value);
 		if (loginForm.value.captcha_code !== codeNet.value) {
 			ElMessage.error("验证码错误！");
 			return;

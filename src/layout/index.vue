@@ -50,6 +50,5 @@ import Sidebar from "./components/Sidebar";
 import AppMain from "./components/AppMain";
 import variables from "@/styles/variables.module.scss";
 import TagsView from "@/components/TagsView";
-import store from "@/store";
 
 </script>

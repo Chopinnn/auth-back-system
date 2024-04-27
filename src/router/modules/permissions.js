@@ -5,20 +5,14 @@ import Layout from "@/layout";
 export default {
 	path: "/adminAuth",
 	component: Layout,
-	redirect: "/adminAuth/getRoleList",
+	redirect: "/adminAuth/adminList",
 	alwaysShow: true, // will always show the root menu
 	name: "adminAuth",
 	meta: {
 		title: "权限管理",
-		icon: "permission"
+		icon: "user"
 	},
 	children: [
-		{
-			path: "/adminAuth/getRoleList",
-			component: () => import("@/views/permissions-page/roleList.vue"),
-			name: "getRoleList",
-			meta: { title: "角色列表", icon: "role" }
-		},
 		{
 			path: "/adminAuth/adminList",
 			component: () => import("@/views/permissions-page/accountList.vue"),
@@ -36,7 +30,7 @@ export default {
 			name: "accountDetail",
 			component: () => import("@/views/permissions-page/accountDetail.vue"),
 			meta: { title: "账号详情", icon: "personnel" },
-			hidden: true// true不显示在侧边栏
+			hidden: true // true不显示在侧边栏
 
 		}
 

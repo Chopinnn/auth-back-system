@@ -4,8 +4,6 @@ import store from "./store";
 
 import router from "./router";
 
-// 导入权限控制模块
-import "./permission";
 import "@/styles/index.scss";
 
 // import axios from '@/utils/axios'
