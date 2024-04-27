@@ -19,6 +19,7 @@ export const privateRoutes = [
 	cssAnimation,
 	vueUse
 ];
+
 /**
  * 公开路由表
  */
@@ -52,12 +53,6 @@ export const publicRoutes = [
 			}
 		]
 	}
-	// 测试页面
-	// {
-	//     path: '/test',
-	//     component: () => import('@/views/test-page/test'),
-	//
-	// },
 ];
 
 /**
