@@ -36,8 +36,6 @@ axios.interceptors.response.use(response => {
 export default function http(options) {
 	// 获取不同环境的请求域名
 	const server_url = switchServerUrl();
-
-	let opt = {};
 	const method = options.method || "post";
 	const url = options.url;
 	const data = options.data || {};
@@ -46,8 +44,12 @@ export default function http(options) {
 		return;
 	}
 	if (store.getters.token) {
+		// 将token放入请求头
 		data.sys_token = store.getters.token;
 	}
+
+	// 构造最终的请求参数
+	let opt = {};
 	if (method == "get") {
 		opt = {
 			method,
@@ -61,28 +63,14 @@ export default function http(options) {
 			method,
 			baseURL: "",
 			url: url.indexOf("//") > -1 ? url : (server_url + url),
-			data, // qs.stringify(data)
+			data,
 			timeout: AXIOS_TIMEOUT
 		};
 	}
+
 	return new Promise((resolve, reject) => {
 		axios(opt).then(res => {
-			if (res && (res.status === 200 || res.status === 304 || res.status === 400)) {
-				const data = res.data;
-				if (data.status && data.status.error_code == 0) {
-					resolve(data);
-				} else if (data.status && (data.status.error_code == 101 || data.status.error_code == 102 || data.status.error_msg == "您还没有登录")) { // 101请获取权限 102登录失效
-					ElMessage.error(data.status.error_msg); // 提示错误信息
-					// 登出操作
-					store.dispatch("user/logout");
-				} else {
-					ElMessage.error(data.status.error_msg || "网络异常，请稍后重试！"); // 提示错误信息
-					reject(data);
-				}
-			} else {
-				ElMessage.error(res || "网络异常，请稍后重试！"); // 提示错误信息
-				reject("网络异常，请稍后重试");
-			}
+			resolve(res.data);
 		}, err => {
 			ElMessage.error(err); // 提示错误信息
 			reject(err);

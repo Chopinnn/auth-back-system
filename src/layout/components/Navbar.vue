@@ -47,7 +47,7 @@
     float: right;
     align-items: center;
     padding-right: 16px;
-    ::v-deep .right-menu-item {
+    :deep(.right-menu-item){
       display: inline-block;
       padding: 0 18px 0 0;
       vertical-align: text-bottom;
@@ -61,7 +61,7 @@
         }
       }
     }
-    ::v-deep .avatar-container {
+    :deep(.avatar-container){
       cursor: pointer;
       .avatar-wrapper {
         display: flex;
@@ -85,7 +85,7 @@
       background: rgba(0, 0, 0, 0.1);
     }
   }
-  ::v-deep .avatar {
+  :deep(.avatar){
     margin-right: 5px;
     border-radius: 50%;
     width: 30px;

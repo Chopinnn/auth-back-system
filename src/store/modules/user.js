@@ -1,4 +1,4 @@
-import { login, getPermission } from "@/api/api";
+import { login } from "@/api/api";
 import { setItem, getItem, removeAllItem } from "@/utils/storage";
 import { TOKEN, USERINFO } from "@/constant";
 import { setTimeStamp } from "@/utils/auth";

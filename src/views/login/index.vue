@@ -81,13 +81,13 @@ $txt_color: #333;
     width: 420px;
     max-width: 100%;
     background: white;
-    ::v-deep .el-form-item {
+    :deep(.el-form-item){
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 5px;
       background: rgba(0, 0, 0, 0.1);
       color: #454545;
     }
-    ::v-deep .el-input {
+    :deep(.el-input){
       display: inline-block;
       width: 85%;
       height: 47px;

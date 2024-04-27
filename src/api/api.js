@@ -1,5 +1,4 @@
 import axios from "@/utils/axios";
-import moment from "moment";
 
 /**
  * 登录
@@ -17,18 +16,6 @@ export function login(params) {
 export function getCode(params) {
 	return axios({
 		url: "/Index/getCaptchaCode",
-		method: "post",
-		data: params
-	});
-}
-
-/**
- * 权限列表（侧边栏权限和按钮权限）
- * @param params
- */
-export function getPermission(params) {
-	return axios({
-		url: "/Index/getPermission",
 		method: "post",
 		data: params
 	});
@@ -53,15 +40,6 @@ export function getAdmintorList(params) {
 export function getRoleList(params) {
 	return axios({
 		url: "/adminAuth/getRoleList",
-		method: "post",
-		data: params
-	});
-}
-
-// 上传图片
-export function publicUploadFile(params) {
-	return axios({
-		url: "/public/uploadFile",
 		method: "post",
 		data: params
 	});

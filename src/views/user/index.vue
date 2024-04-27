@@ -51,7 +51,7 @@
 						<div style="display: flex;justify-content: space-between;align-items: center;">
 							<div>{{row.account}}</div>
 							<el-link
-								v-copyText="row.url" v-copyText:callback="copyTextSuccess" :underline="false"
+								v-copyText="row.account" v-copyText:callback="copyTextSuccess" :underline="false"
 								:icon="CopyDocument" type="warning"
 							>
 								复制
