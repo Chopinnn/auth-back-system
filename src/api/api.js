@@ -1,3 +1,4 @@
+// mock模拟数据的接口
 import axios from "@/utils/axios";
 
 /**
@@ -10,6 +11,7 @@ export function login(params) {
 		data: params
 	});
 }
+
 /**
  * 获取图形验证码
  */

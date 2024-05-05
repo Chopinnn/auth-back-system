@@ -105,7 +105,7 @@ import { useStore } from "vuex";
 const route = useRoute();
 
 onMounted(() => {
-	console.log(store.getters.cssVar);
+	// console.log(store.getters.cssVar);
 });
 
 /**

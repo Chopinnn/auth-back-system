@@ -36,16 +36,14 @@ export default defineConfig({
 	},
 	server: {
 		cors: true, // 允许跨域
-		host: "0.0.0.0",
 		open: true, // 服务启动时是否自动打开浏览器
 		port: 9999, // 服务端口号
 		proxy: {
-			"/api": {
+			"/server": {
 				changeOrigin: true,
-				rewrite: (path) => path.replace(/^\/api/, ""),
-				target: "http://127.0.0.1:9999/"
-				// target: "http://localhost:8080/"
-
+				rewrite: (path) => path.replace(/^\/server/, ""),
+				target: "https://localhost:3000/",
+				secure: false
 			}
 		}
 

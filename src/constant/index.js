@@ -1,7 +1,7 @@
 // 0测试环境，1模测环境, 2预发布线上环境, 3线上开发, 4本地开发
-export const SERVER_TYPE = 4;
+export const SERVER_TYPE = 0;
 // 0测试环境
-export const TEST_URL = "0测试环境接口域名";
+export const TEST_URL = "/server";
 // 1模测环境
 export const MO_URL = " 1模测环境接口域名";
 // 2预发布环境

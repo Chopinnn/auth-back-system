@@ -32,7 +32,7 @@
 				</span>
 			</el-form-item>
 
-			<el-form-item class="code-box" prop="captcha_code">
+			<!-- <el-form-item class="code-box" prop="captcha_code">
 				<span class="icon-container">
 					<Tickets style="width: 1em;height: 1em" />
 				</span>
@@ -42,7 +42,7 @@
 				>
 				</el-input>
 				<div class="code-img" @click="getCodeImg">{{codeNet}}</div>
-			</el-form-item>
+			</el-form-item> -->
 
 			<el-button
 				type="primary" style=" margin-bottom: 30px;width: 100%;" :loading="loading"
@@ -53,7 +53,7 @@
 		</el-form>
 		<!--  底部  -->
 		<div class="el-login-footer">
-			<span>项目搭建博客地址：https://juejin.cn/user/1310273591836957</span>
+			<span></span>
 		</div>
 	</div>
 </template>
@@ -215,7 +215,7 @@ for (let i = 0; i < 1000; i++) {
 const codeNet = ref("");
 
 onMounted(() => {
-	getCodeImg();
+	// getCodeImg();
 });
 
 // 数据源
@@ -244,14 +244,14 @@ const loginRules = ref({
 		}
 
 	],
-	captcha_code: [
-		{
-			required: true,
-			trigger: "blur",
-			validator: validateCode()
-		}
+	// captcha_code: [
+	// 	{
+	// 		required: true,
+	// 		trigger: "blur",
+	// 		validator: validateCode()
+	// 	}
 
-	]
+	// ]
 });
 
 // 处理密码框文本显示状态
@@ -276,10 +276,10 @@ const router = useRouter();
 const handleLogin = () => {
 	loginFromRef.value.validate(valid => {
 		if (!valid) return;
-		if (loginForm.value.captcha_code !== codeNet.value) {
-			ElMessage.error("验证码错误！");
-			return;
-		}
+		// if (loginForm.value.captcha_code !== codeNet.value) {
+		// 	ElMessage.error("验证码错误！");
+		// 	return;
+		// }
 		loading.value = true;
 		store.dispatch("user/login", loginForm.value)
 			.then(() => {
