@@ -1,14 +1,21 @@
 // 真实数据的接口
 import axios from "@/utils/axios";
 
-/**
- * 用户列表
- * @param params
- */
+
+// 条件获取用户列表
+export function getUserListByCondition(params) {
+	return axios({
+		url: "/query/userListByCondition",
+		method: "post",
+		data: {params}
+	});
+}
+
+// 获取用户列表
 export function getUserList(params) {
 	return axios({
 		url: "/query/userList",
-		method: "get",
+		method: "post",
 		data: {params}
 	});
 }
@@ -26,6 +33,15 @@ export function forceLogout(params) {
 export function deleteUser(params) {
 	return axios({
 		url: "/query/deleteUser",
+		method: "post",
+		data: {params}
+	});
+}
+
+// 修改用户角色权限
+export function modifyRole(params) {
+	return axios({
+		url: "/query/modifyRole",
 		method: "post",
 		data: {params}
 	});

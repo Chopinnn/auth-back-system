@@ -20,6 +20,12 @@
             <el-descriptions-item label="最近登录时间">{{
               dayjs(Number(userInfo.time)).format("YYYY-MM-DD HH:mm:ss")
             }}</el-descriptions-item>
+            <el-descriptions-item label="角色权限" :span="2">
+              <el-tag type="danger" v-if="userInfo.role === 'super'"
+                >超级用户</el-tag
+              >
+              <el-tag type="success" v-else>普通用户</el-tag>
+            </el-descriptions-item>
             <el-descriptions-item label="登录状态" :span="2">
               <el-tag type="danger" v-if="userInfo.state === '0'"
                 >未登录</el-tag

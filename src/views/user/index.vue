@@ -1,6 +1,7 @@
 <template>
   <div class="home-box">
-    <el-form v-show="showSearch" :inline="true" :model="searchForm">
+    <!-- 查询 -->
+    <!-- <el-form v-show="showSearch" :inline="true" :model="searchForm">
       <el-form-item label="用户名" prop="id">
         <el-input
           v-model="searchForm.account"
@@ -26,19 +27,19 @@
         <el-button
           type="primary"
           style="margin-left: -16px"
-          @click="searchEvent"
+          @click="handleSearch"
         >
           查询
         </el-button>
       </el-form-item>
-    </el-form>
+    </el-form> -->
 
     <right-toolbar
       v-model:showSearch="showSearch"
       :have-import="false"
       :haveAdd="false"
       :haveOut="false"
-      @queryTable="handleGetUserList"
+      @queryTable="handleGetUserListByCondition"
     ></right-toolbar>
 
     <!-- 列表 -->
@@ -56,22 +57,15 @@
         <el-table-column prop="account" label="用户名" width="240" header-align="center" align="center">
           <template #default="{ row }">
             <div
-              style="
+            style="
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
               "
             >
               <div>{{ row.username }}</div>
-              <el-link
-                v-copyText="row.account"
-                v-copyText:callback="copyTextSuccess"
-                :underline="false"
-                :icon="CopyDocument"
-                type="warning"
-              >
-                复制
-              </el-link>
+              <el-tag type="danger" v-if="row.role==='super'">超级用户</el-tag>
+              <el-tag type="success" v-else>普通用户</el-tag>
             </div>
           </template>
         </el-table-column>
@@ -82,16 +76,16 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="授权/登录状态" width="180" header-align="center" align="center">
+        <el-table-column label="登录状态" width="180" header-align="center" align="center">
           <template #default="{ row }">
-            <el-tag type="danger" v-if="row.state==='0'">未登录</el-tag>
+            <el-tag type="info" v-if="row.state==='0'">未登录</el-tag>
             <el-tag type="success" v-else>已登录</el-tag>
           </template>
         </el-table-column>
 
         <el-table-column
           prop="date"
-          label="最近操作时间"
+          label="最近登录时间"
           width="180"
 		  header-align="center" align="center"
         >
@@ -102,16 +96,16 @@
 
         <el-table-column prop="address" label="操作" min-width="280" header-align="center" align="center">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="onShowClick(row)">
+            <el-button type="success" size="small" @click="onShowClick(row)">
               查看
             </el-button>
-            <!-- <el-button type="info" size="small" @click="onShowRoleClick(row)">
-              编辑
-            </el-button> -->
+            <el-button type="info" size="small" @click="onShowRoleClick(row)">
+              权限编辑
+            </el-button>
             <el-button type="danger" size="small" @click="ondeleteUser(row)">
               删除用户
             </el-button>
-            <el-button type="danger" size="small" @click="onLogout(row)"> 强制登出 </el-button>
+            <el-button type="warning" size="small" @click="onLogout(row)"> 强制下线 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -120,80 +114,80 @@
       <pagination
         v-show="total > 0"
         v-model:page="searchForm.page"
-        v-model:limit="searchForm.page_size"
+        v-model:limit="searchForm.pageSize"
         :total="total"
-        @pagination="handleGetUserList"
+        @pagination="handlePagination"
       />
     </el-card>
 
     <!--角色详情组件-->
     <roles-dialog
       v-model="roleDialogVisible"
-      :user-id="selectUserId"
-      @updateRole="handleGetUserList"
+      :username="selectUsername"
+      :userRole="selectUserRole"
+      @updateRole="handleupdateRole"
     >
     </roles-dialog>
   </div>
 </template>
 
 <script setup>
-import RolesDialog from "./components/roles.vue";
+import RolesDialog from "./roles.vue";
 
 import { ref, onMounted, watch } from "vue";
-import { getUserList,forceLogout,deleteUser } from "@/api/index";
+import { getUserList,getUserListByCondition,forceLogout,deleteUser,modifyRole } from "@/api/index";
 import { useRouter } from "vue-router";
 import { ElMessageBox, ElMessage } from "element-plus";
-import { CopyDocument } from "@element-plus/icons";
 import dayjs from "dayjs";
 
 const router = useRouter();
 
 const showSearch = ref(true);
 
-// 查询用户列表的参数
+// 查询参数
 const searchForm = ref({
-  username: "xxx",
+  username: "",
   phone: "",
   state: "",
-  time: "",
   page: 1,
-  page_size: 20,
+  pageSize: 4,
 });
 
+// 表格数据
 const tableData = ref([]);
+
 // 用户总数
 const total = ref(0);
+
 const loading = ref(false);
 
+// 角色权限编辑相关
+const selectUsername = ref("");
+const selectUserRole = ref("");
+const roleDialogVisible = ref(false);
+
 onMounted(() => {
-  handleGetUserList();
+  getUserList().then((data) => {
+    total.value = Number(data.data.msg.length);
+  });
+  handleGetUserListByCondition();
 });
 
-/** 复制代码成功 */
-const copyTextSuccess = () => {
-  ElMessage.success("复制成功");
-};
-
-/**
- * 获取用户列表
- */
-const handleGetUserList = async () => {
+// 获取用户列表
+const handleGetUserListByCondition = async () => {
   loading.value = true;
-  await getUserList(searchForm.value)
+  await getUserListByCondition(searchForm.value)
     .then((data) => {
       tableData.value = data.data.msg;
-      total.value = Number(data.data.msg.length);
       loading.value = false;
-      console.log("hjz1", data);
+      console.log("用户数据", data);
     })
     .catch((err) => {
       loading.value = false;
     });
 };
 
-/**
- * 查看按钮点击事件
- */
+// 查看
 const onShowClick = (row) => {
   router.push({
     path: "/account/detail",
@@ -209,43 +203,58 @@ const ondeleteUser = (row) => {
     await deleteUser(row.username) 
     ElMessage.success("删除成功");
     // 重新渲染数据
-    await handleGetUserList();
+    await handleGetUserListByCondition();
   });
 };
 
-// 强制登出用户
+// 强制下线用户
 const onLogout = (row) => {
-  ElMessageBox.confirm("确定要强制登出" + row.username + "吗", {
+  ElMessageBox.confirm("确定要强制下线" + row.username + "吗", {
     type: "warning",
   }).then(async () => {
-    await forceLogout(row.username);
-    ElMessage.success("强制登出成功");
-    // 重新渲染数据
-    await handleGetUserList();
+    await forceLogout(row.token);
+    loading.value = true;
+    setTimeout(() => {
+      ElMessage.success("强制下线成功");
+      loading.value = false;
+      handleGetUserListByCondition();
+    }, 1000);
   });
 };
 
-/**
- * 查看角色
- */
-const selectUserId = ref("");
-const roleDialogVisible = ref(false);
+// 角色权限编辑
 const onShowRoleClick = (row) => {
-  // 真实环境应该获取用户id，但这里mock数据我们直接使用角色名字去匹配
-  selectUserId.value = row.role_name;
+  selectUsername.value = row.username;
+  selectUserRole.value = row.role;
   roleDialogVisible.value = true;
 };
-
 // 保证每次打开重新获取用户角色数据
 watch(roleDialogVisible, (val) => {
-  if (!val) selectUserId.value = "";
+  if (!val) selectUsername.value = "";
 });
 
-const searchEvent = () => {
+// 更新角色权限
+const handleupdateRole =(role)=>{
+  modifyRole({username:selectUsername.value,role}).then(()=>{
+    ElMessage.success("角色权限更新成功");
+    handleGetUserListByCondition();
+  });
+}
+
+// 分页
+const handlePagination = (paload) => {
+  let { page,limit } = paload;
+  searchForm.value.page = page;
+  searchForm.value.pageSize = limit;
+  handleGetUserListByCondition();
+};
+
+// 查询
+const handleSearch = () => {
   console.log(searchForm.value);
   console.log(tableData.value);
   searchForm.value.page = 1;
-  handleGetUserList();
+  handleGetUserListByCondition();
 };
 </script>
 

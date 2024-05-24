@@ -5,7 +5,7 @@
 		</div>
 		<el-form ref="loginFromRef" class="login-form" :model="loginForm" :rules="loginRules">
 			<div class="title-container">
-				<h3 class="title">Vue3后台系统</h3>
+				<h3 class="title">CAS后台系统</h3>
 			</div>
 
 			<el-form-item prop="username" style="display: flex;flex-direction: row">
@@ -57,6 +57,122 @@
 		</div>
 	</div>
 </template>
+
+<script setup>
+import { UserFilled, Lock, Tickets } from "@element-plus/icons";
+
+import { ref, onMounted } from "vue";
+import { validatePassword, validateCode } from "./rules";
+import { getCode } from "@/api/api";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
+
+// 雪花效果
+const snow = ref([]);
+for (let i = 0; i < 1000; i++) {
+	snow.value.push(i);
+}
+
+const codeNet = ref("");
+
+onMounted(() => {
+	// getCodeImg();
+});
+
+// 数据源
+const loginForm = ref({
+	username: "hjz",
+	password: "123456",
+	captcha_code: "",
+	code_key: ""
+});
+
+// 验证规则
+const loginRules = ref({
+	username: [
+		{
+			required: true,
+			trigger: "blur",
+			message: "请输入用户名"
+		}
+
+	],
+	password: [
+		{
+			required: true,
+			trigger: "blur",
+			validator: validatePassword()
+		}
+
+	],
+	// captcha_code: [
+	// 	{
+	// 		required: true,
+	// 		trigger: "blur",
+	// 		validator: validateCode()
+	// 	}
+
+	// ]
+});
+
+// 处理密码框文本显示状态
+const passwordType = ref("password");
+const onChangePwdType = () => {
+	if (passwordType.value === "password") {
+		passwordType.value = "text";
+	} else {
+		passwordType.value = "password";
+	}
+};
+
+// 登录动作处理
+const loading = ref(false);
+const loginFromRef = ref(null);
+const store = useStore();
+const router = useRouter();
+
+/**
+ * 登录
+ */
+const handleLogin = () => {
+	loginFromRef.value.validate(valid => {
+		if (!valid) return;
+		// if (loginForm.value.captcha_code !== codeNet.value) {
+		// 	ElMessage.error("验证码错误！");
+		// 	return;
+		// }
+		loading.value = true;
+		store.dispatch("user/login", loginForm.value)
+			.then(() => {
+				setTimeout(() => {
+					loading.value = false;
+					// TODO: 登录后操作
+					router.push("/");
+				}, 500);
+			})
+			.catch(() => {
+				getCodeImg();
+				loading.value = false;
+			});
+	});
+};
+/**
+ * 获取图形验证码
+ */
+const getCodeImg = () => {
+	getCode({})
+		.then(data => {
+			const obj = data.obj;
+
+			loginForm.value.code_key = obj.code_key;
+			codeNet.value = obj.code;
+		})
+		.catch(() => {
+		});
+};
+
+</script>
 
 <style lang="scss" scoped>
 $bg: #5268bc;
@@ -195,119 +311,3 @@ $txt_color: #333;
   }
 }
 </style>
-
-<script setup>
-import { UserFilled, Lock, Tickets } from "@element-plus/icons";
-
-import { ref, onMounted } from "vue";
-import { validatePassword, validateCode } from "./rules";
-import { getCode } from "@/api/api";
-import { useStore } from "vuex";
-import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
-
-// 雪花效果
-const snow = ref([]);
-for (let i = 0; i < 1000; i++) {
-	snow.value.push(i);
-}
-
-const codeNet = ref("");
-
-onMounted(() => {
-	// getCodeImg();
-});
-
-// 数据源
-const loginForm = ref({
-	username: "admin",
-	password: "123456",
-	captcha_code: "",
-	code_key: ""
-});
-
-// 验证规则
-const loginRules = ref({
-	username: [
-		{
-			required: true,
-			trigger: "blur",
-			message: "请输入用户名"
-		}
-
-	],
-	password: [
-		{
-			required: true,
-			trigger: "blur",
-			validator: validatePassword()
-		}
-
-	],
-	// captcha_code: [
-	// 	{
-	// 		required: true,
-	// 		trigger: "blur",
-	// 		validator: validateCode()
-	// 	}
-
-	// ]
-});
-
-// 处理密码框文本显示状态
-const passwordType = ref("password");
-const onChangePwdType = () => {
-	if (passwordType.value === "password") {
-		passwordType.value = "text";
-	} else {
-		passwordType.value = "password";
-	}
-};
-
-// 登录动作处理
-const loading = ref(false);
-const loginFromRef = ref(null);
-const store = useStore();
-const router = useRouter();
-
-/**
- * 登录
- */
-const handleLogin = () => {
-	loginFromRef.value.validate(valid => {
-		if (!valid) return;
-		// if (loginForm.value.captcha_code !== codeNet.value) {
-		// 	ElMessage.error("验证码错误！");
-		// 	return;
-		// }
-		loading.value = true;
-		store.dispatch("user/login", loginForm.value)
-			.then(() => {
-				setTimeout(() => {
-					loading.value = false;
-					// TODO: 登录后操作
-					router.push("/");
-				}, 500);
-			})
-			.catch(() => {
-				getCodeImg();
-				loading.value = false;
-			});
-	});
-};
-/**
- * 获取图形验证码
- */
-const getCodeImg = () => {
-	getCode({})
-		.then(data => {
-			const obj = data.obj;
-
-			loginForm.value.code_key = obj.code_key;
-			codeNet.value = obj.code;
-		})
-		.catch(() => {
-		});
-};
-
-</script>
